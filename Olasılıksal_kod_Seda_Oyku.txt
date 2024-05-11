@@ -1,0 +1,120 @@
+data <- read.csv("station_rio.csv")
+
+get_label <- function(temperature) {
+  if (temperature<21) {
+    result <- "cold"
+  }
+  else if (temperature < 24) {
+    result <- "warm"
+  }
+  else {
+    result <- "hot"
+  }
+  return(result)
+}
+
+
+temperature_list = list()
+for (i in 1:nrow(data)) {
+  for (j in 2:(ncol(data)-5)) {
+    temperature_list <- append(temperature_list, get_label(data[i,j]))
+  }
+}
+
+# temperature_list = list("cold", "cold", "cold", "warm", "warm", "warm", "hot", "hot", "cold", "cold", "warm")
+
+labels = c("cold","warm","hot") 
+markov_df = data.frame(matrix(nrow = length(labels), ncol = length(labels))) 
+colnames(markov_df) = labels
+rownames(markov_df) = labels
+markov_df[] <- 0
+
+
+for (i in 1:(length(temperature_list)-1)) {
+  current_state <- temperature_list[i]
+  next_state <- temperature_list[i+1]
+  row <- which(labels == current_state)
+  col <- which(labels == next_state)
+  markov_df[row, col] <- markov_df[row, col] + 1
+}
+
+labels = c("cold","warm","hot") 
+markov_stat_df = data.frame(matrix(nrow = length(labels), ncol = length(labels))) 
+colnames(markov_stat_df) = labels
+rownames(markov_stat_df) = labels4
+markov_stat_df[] <- 0
+
+for (i in 1:length(labels)) {
+  for (j in 1:length(labels)) {
+    markov_stat_df[i,j] <- markov_df[i,j]/rowSums(markov_df)[i]
+  }
+}
+
+library(expm)
+library(markovchain)
+library(diagram)
+library(pracma)
+library(DTMCPack)
+
+
+markov_stat_df
+
+plotmat(markov_stat_df, pos = c(1, 1, 1), lwd = 1, box.lwd = 2, cex.txt = 0.5, box.size = 0.08, box.type = "circle", box.prop = 0.5, box.col = 
+          "Light yellow", arr.length = .1, arr.widht= .1, self.cex = .4,
+          self.shifty = -.01,self.shiftx = .13, main ="")
+
+library(Matrix)
+library(expm)
+library(markovchain)
+library(diagram)
+library(pracma)
+library(Matrix)
+stateNames <- c("cold", "warm", "hot")
+P <- matrix(c(0.30000000, 0.6750000, 0.0250000, 0.1320755, 0.6603774, 0.2075472, 0.00000000, 0.1446945, 0.8553055), nrow=3, byrow=TRUE)
+row.names(P) <- stateNames; colnames(P) <- stateNames
+P3<- P %*% P;P3
+P20<- P %*% P;P20
+P60<- P %*% P;P60
+P150<- P %*% P;P150
+P250<- P %*% P;P250
+P350<- P %*% P;P350
+
+absorbingStates(P)
+
+P8<- P %*% P;P8
+P4<- P %*% P;P4
+P2<- P %*% P;P2
+
+stateNames <- c("a", "b", "c")
+A <- matrix(c(0.2, 0.5, 0.3, 0.1, 0.2, 0.7, 0.4, 0.5, 0.1), nrow=3, byrow=TRUE)
+row.names(A) <- stateNames; colnames(A) <- stateNames
+A
+
+
+plotmat(A, pos = c(1, 1, 1), lwd = 1, box.lwd = 2, cex.txt = 0.5, box.size = 0.08, box.type = "circle", box.prop = 0.5, box.col = 
+          "Light yellow", arr.length = .1, arr.widht= .1, self.cex = .4,
+        self.shifty = -.01,self.shiftx = .13, main ="")
+
+
+
+stateNames <- c("a", "b", "c")
+B <- matrix(c(1, 0, 0, 0.05, 0.45, 0.50, 0, 0.5, 0.5), nrow=3, byrow=TRUE)
+row.names(B) <- stateNames; colnames(B) <- stateNames
+B
+
+
+plotmat(B, pos = c(1, 1, 1), lwd = 1, box.lwd = 2, cex.txt = 0.5, box.size = 0.08, box.type = "circle", box.prop = 0.5, box.col = 
+                    "Light yellow", arr.length = .1, arr.widht= .1, self.cex = .4,
+                   self.shifty = -.01,self.shiftx = .13, main ="")
+          
+stateNames <- c("a", "b", "c","d")
+D<- matrix(c(0.2, 0.8, 0, 0, 0.5, 0.5, 0, 0, 0,0,0.6,0.4,0,0,0.1,0.9), nrow=4, byrow=TRUE)
+row.names(D) <- stateNames; colnames(D) <- stateNames
+D
+
+plotmat(D, pos = c(1,2,1), lwd = 1, box.lwd = 2, cex.txt = 0.5, box.size = 0.08, box.type = "circle", box.prop = 0.5, box.col = 
+          "Light yellow", arr.length = .1, arr.widht= .1, self.cex = .4,
+        self.shifty = -.01,self.shiftx = .13, main ="")
+
+
+
